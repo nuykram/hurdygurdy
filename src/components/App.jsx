@@ -15,7 +15,7 @@ function App() {
     return sFPlayer.instrument(
       new AudioContext(),
       'music_box'
-    );;
+    )
   };
 
   const getMidiPlayer = (midiURL = "") => {
@@ -37,36 +37,25 @@ function App() {
       });
   };
 
-  // TEMPORARY HACK : Waiting for a fix on this : https://github.com/grimmdude/MidiPlayerJS/issues/20
-// to be able to use Player.instruments : number[]
-const getMidiInstruments = (midiPlayer) => {
-  const { tracks } = midiPlayer;
-  const trackChannels = midiPlayer.tracks.map(track => track.events[0].channel);
-  const instrumentsMidiNumber = trackChannels.reduce((acc, cur) => ({ ...acc, [cur]: true }), {})
-  return Object.keys(instrumentsMidiNumber).map(instrumentNumber => ({ name: 'music_box', channel: 1 }))
-  // return [midiPlayer.tracks[0].events[0].channel]
-}
-
-
-const loadInstruments = (midiPlayer) => {
-  const midiInstruments = getMidiInstruments(midiPlayer)
-  const instrumentNames = [];
-  const instrumentPromises = [];
-  for (let instrument of midiInstruments) {
-    instrumentNames.push(instrument.name)
-    instrumentPromises.push(getInstrument())
-  }
-  return Promise.all(instrumentPromises)
-    .then(instruments =>
-      //instruments
-      instruments.reduce((acc, cur, i) => {
-        return {
-          ...acc,
-          [instrumentNames[i]]: cur
-        }
-      }, {})
-    ).catch(console.warn)
-}
+// const loadInstruments = (midiPlayer) => {
+//   const midiInstruments = getMidiInstruments(midiPlayer)
+//   const instrumentNames = [];
+//   const instrumentPromises = [];
+//   for (let instrument of midiInstruments) {
+//     instrumentNames.push(instrument.name)
+//     instrumentPromises.push(getInstrument())
+//   }
+//   return Promise.all(instrumentPromises)
+//     .then(instruments =>
+//       //instruments
+//       instruments.reduce((acc, cur, i) => {
+//         return {
+//           ...acc,
+//           [instrumentNames[i]]: cur
+//         }
+//       }, {})
+//     ).catch(console.warn)
+// }
 
   // Initialize player and register event handler
   const Player = getMidiPlayer(Song)
@@ -88,15 +77,14 @@ const loadInstruments = (midiPlayer) => {
   const playMusic = (e) =>{
     
     Player.then((item) => {
-      loadInstruments(item).then((music) => {
-        console.log(music)
+
         item.play()
         item.on('midiEvent',(e)=>{
           if(e.noteName){
             const now = Tone.now()
+            console.log(e)
             synth.triggerAttackRelease(e.noteName, '4n',now)
           }
-        })
       })
     });
   }
