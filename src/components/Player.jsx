@@ -168,10 +168,16 @@ const Player = ({ url }) => {
             Stop
           </button>
           <input
+            className='song-speed-range'
             type="range"
-            min='1'
+            min='60'
             max='240'
-            onChange={(e)=>{midiPlayer.setTempo(e.target.valueAsNumber)}}
+            onChange={
+              (e)=>{
+                console.log(e)
+                midiPlayer.setTempo(e.target.valueAsNumber)
+              }
+            }
           />
 
         </div>
