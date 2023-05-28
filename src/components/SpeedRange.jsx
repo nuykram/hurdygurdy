@@ -1,27 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import debounce from 'lodash/debounce'
 
-const SpeedRange = ({setSpeed, speed}) => {
-    const defaultTime = 300;
-    const tempoLowerBound = '60'; //default 120
-    const tempoUpperBound = '240';
+
+const SpeedRange = ({ midiRef, tempoLowerBound, tempoUpperBound }) => {
     
-    const [currentSpeed, setCurrentSpeed] = useState(speed);
-    const [timer, setTimer] = useState(defaultTime) //play around wiht the timer speed
+    const delay = 300;
+    tempoLowerBound = String(tempoLowerBound); //default 120
+    tempoUpperBound = String(tempoUpperBound);
+    const [currentSpeed, setCurrentSpeed] = useState(120);
+
+    const onSpeedChange = (e) => {
+        midiRef.pause();
+        console.log('changing to this speed:', e.target.valueAsNumber)
+        midiRef.setTempo(e.target.valueAsNumber)
+        setCurrentSpeed(e.target.valueAsNumber)
+        midiRef.play();
+    }
+
+    const throttledOnSpeedChange = debounce(onSpeedChange, delay);
+
     return (
         <div>
             <p className='speed-label'>{currentSpeed}</p>
             <input
                 className='song-speed-range'
                 type="range"
-                min='60'
-                max='240'
-                onChange={
-                (e)=>{
-                    let timer = setTimeout(() => {
-                    midiPlayer.setTempo(e.target.valueAsNumber)
-                    }, 100);
-                }
-                }
+                min={tempoLowerBound}
+                max={tempoUpperBound}
+                onChange={throttledOnSpeedChange}
             />
         </div>
     );

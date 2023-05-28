@@ -7,6 +7,8 @@ import { getInstrument, loadInstruments } from '../util/load-instrument';
 
 import MidiPlayer from 'midi-player-js';
 
+import SpeedRange from './SpeedRange'
+
 const loadMidi = async url => {
   const { data } = await axios.get(url, {
     headers: {"Access-Control-Allow-Origin": "*"},
@@ -167,19 +169,14 @@ const Player = ({ url }) => {
           >
             Stop
           </button>
-          <input
-            className='song-speed-range'
-            type="range"
-            min='60'
-            max='240'
-            onChange={
-              (e)=>{
-                console.log(e)
-                midiPlayer.setTempo(e.target.valueAsNumber)
-              }
-            }
-          />
 
+
+          <SpeedRange 
+            midiRef={ midiPlayer }
+            tempoUpperBound={240}
+            tempoOLowerBound={60}
+          />
+          
         </div>
       ) : (
         'Loading Instruments'
